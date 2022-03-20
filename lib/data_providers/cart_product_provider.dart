@@ -1,18 +1,52 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:git_tees_shop/core/database_api.dart';
+import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
+import 'package:git_tees_shop/data_classes/tshirt.dart';
+import 'package:mysql1/mysql1.dart';
 
 class CartProductProvider extends StateNotifier<List<CartProduct>> {
   CartProductProvider() : super([]);
 
-  Future addProductToCart(CartProduct productToCart) async {
-    if (_checkForDuplicates(productToCart).isNotEmpty) {
-      increaseProductQuantity(productToCart);
-    } else {
-      List<CartProduct> _temp = state;
-      _temp.add(productToCart);
+  Future scanProduct(String productID, WidgetRef ref) async {
+    ConnectionSettings _settings = ref.read(databaseSettingsProvider);
 
-      state = _temp.toList();
+    CartProduct productToCart = CartProduct.empty();
+
+    try {
+      Tshirts _tshirt = await DatabaseAPI(settings: _settings).addToCart(productID);
+
+      productToCart = CartProduct(
+        cartQuantity: 1,
+        tshirts: _tshirt,
+      );
+    } catch (e) {
+      if (e.toString() == 'Bad state: No element') {
+        return Future.error('Product does not exist');
+      } else {
+        return Future.error(e);
+      }
     }
+
+    if (productToCart.tshirts.quantity == 0) {
+      return Future.error('No stock left');
+    }
+
+    Iterable<CartProduct> _duplicates = _checkForDuplicates(productToCart);
+
+    if (_duplicates.isNotEmpty) {
+      return increaseProductQuantity(_duplicates.first);
+    } else {
+      _addToCart(productToCart);
+    }
+  }
+
+  _addToCart(CartProduct productToCart) {
+    List<CartProduct> _temp = state;
+    _temp.add(productToCart);
+
+    state = _temp.toList();
   }
 
   Iterable<CartProduct> _checkForDuplicates(CartProduct productToCart) {
@@ -24,6 +58,11 @@ class CartProductProvider extends StateNotifier<List<CartProduct>> {
   }
 
   increaseProductQuantity(CartProduct productToCart) {
+    if (productToCart.cartQuantity >= productToCart.tshirts.quantity) {
+      EasyLoading.showError('No stock left');
+      return Future.error('No stock left');
+    }
+
     for (var element in state) {
       if (element.tshirts.productID == productToCart.tshirts.productID) {
         element.cartQuantity++;
@@ -33,11 +72,11 @@ class CartProductProvider extends StateNotifier<List<CartProduct>> {
     state = state.toList();
   }
 
-  decreaseProductQuantity(CartProduct productToCart) {
+  decreaseProductQuantity(CartProduct productToCart, WidgetRef ref) {
     for (var cartProduct in state) {
       if (cartProduct.tshirts.productID == productToCart.tshirts.productID) {
         if (cartProduct.cartQuantity == 1) {
-          removeProductFromCart(cartProduct);
+          removeProductFromCart(cartProduct, ref);
           return;
         }
 
@@ -48,9 +87,15 @@ class CartProductProvider extends StateNotifier<List<CartProduct>> {
     state = state.toList();
   }
 
-  removeProductFromCart(CartProduct cartProduct) {
+  removeProductFromCart(CartProduct cartProduct, WidgetRef ref) {
     state.remove(cartProduct);
 
+    ref.read(selectedProvider.notifier).removeFromSelected(cartProduct.tshirts.productID);
+
     state = state.toList();
+  }
+
+  clearCart() {
+    state = [];
   }
 }

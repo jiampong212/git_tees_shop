@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/widgets/quantity_toggle.dart';
 
-class PurchaseListTile extends StatelessWidget {
-  const PurchaseListTile({Key? key, required this.product}) : super(key: key);
+class CartListTile extends ConsumerWidget {
+  const CartListTile({Key? key, required this.product}) : super(key: key);
 
   final CartProduct product;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    bool _isSelected = ref.watch(selectedProvider).contains(product.tshirts.productID);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
           flex: 1,
           child: Checkbox(
-            value: false,
-            onChanged: (_) {},
+            value: _isSelected,
+            onChanged: (value) {
+              if (_isSelected) {
+                ref.read(selectedProvider.notifier).removeFromSelected(product.tshirts.productID);
+              } else {
+                ref.read(selectedProvider.notifier).addToSelected(product.tshirts.productID);
+              }
+            },
           ),
         ),
         Expanded(
@@ -28,7 +38,7 @@ class PurchaseListTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: Image.asset(
-              'assets/bg1.png',
+              'assets/${product.tshirts.productName}.jpeg',
             ),
           ),
         ),

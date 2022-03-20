@@ -4,7 +4,8 @@ import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/core/utilites.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/screens/scan_page.dart';
-import 'package:git_tees_shop/widgets/purchase_list_tile.dart';
+import 'package:git_tees_shop/widgets/home_bottom_bar.dart';
+import 'package:git_tees_shop/widgets/cart_list_tile.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -39,33 +40,28 @@ class HomePage extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Visibility(
-            visible: _cartList.isNotEmpty,
-            replacement: SizedBox(
-              height: Utils.homeScreenHeight(context),
-              child: const Center(
-                child: Text('Empty Cart'),
-              ),
-            ),
-            child: SizedBox(
-              height: Utils.homeScreenHeight(context),
-              child: ListView.builder(
-                itemCount: _cartList.length,
-                itemBuilder: (context, index) {
-                  return PurchaseListTile(product: _cartList[index]);
-                },
-              ),
-            ),
+      body: Visibility(
+        visible: _cartList.isNotEmpty,
+        replacement: SizedBox(
+          height: Utils.homeScreenHeight(context),
+          child: const Center(
+            child: Text('Empty Cart'),
+          ),
+        ),
+        child: SizedBox(
+          height: Utils.homeScreenHeight(context),
+          child: ListView.builder(
+            itemCount: _cartList.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CartListTile(product: _cartList[index]),
+              );
+            },
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        height: kBottomNavigationBarHeight,
-        color: Colors.blue,
-      ),
+      bottomNavigationBar: const HomeBottomBar(),
     );
   }
 }

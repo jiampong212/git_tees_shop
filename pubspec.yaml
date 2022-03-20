@@ -39,6 +39,7 @@ dependencies:
   intl: ^0.17.0
   mysql1: ^0.19.2
   flutter_easyloading: ^3.0.3
+  url_launcher: ^6.0.20
 
 
 dev_dependencies:

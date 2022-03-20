@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:git_tees_shop/core/custom_route.dart';
-import 'package:git_tees_shop/core/test_database_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/core/utilites.dart';
-import 'package:git_tees_shop/data_classes/cart_product.dart';
-import 'package:git_tees_shop/data_classes/tshirt.dart';
-import 'package:git_tees_shop/widgets/product_details_card.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class ScanPage extends StatelessWidget {
+class ScanPage extends ConsumerWidget {
   const ScanPage({Key? key}) : super(key: key);
 
   static final TextEditingController _manualScanController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan Product'),
@@ -22,20 +19,29 @@ class ScanPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Visibility(
-            visible: MediaQuery.of(context).viewInsets.bottom == 0,
-            child: SizedBox(
-              height: Utils.scanScreenHeight(context) * 2 / 3,
-              child: _scanner(context),
-            ),
-          ),
-          _manualScan(context)
+          _scanner(context, ref),
+          _manualScan(context, ref),
         ],
       ),
     );
   }
 
-  SizedBox _manualScan(BuildContext context) {
+  Visibility _scanner(BuildContext context, WidgetRef ref) {
+    return Visibility(
+      visible: MediaQuery.of(context).viewInsets.bottom == 0,
+      child: SizedBox(
+        height: Utils.scanScreenHeight(context) * 2 / 3,
+        child: MobileScanner(
+          allowDuplicates: false,
+          onDetect: (code, args) async {
+            await _scanProduct(context, ref, code.rawValue);
+          },
+        ),
+      ),
+    );
+  }
+
+  SizedBox _manualScan(BuildContext context, WidgetRef ref) {
     return SizedBox(
       height: Utils.scanScreenHeight(context) / 3,
       child: Padding(
@@ -66,9 +72,13 @@ class ScanPage extends StatelessWidget {
               flex: 1,
               child: Center(
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () async {
-                    _scanProduct(context, _manualScanController.text.trim());
-                    _manualScanController.clear();
+                    _scanProduct(context, ref, _manualScanController.text.trim());
                   },
                   child: const Text('Enter'),
                 ),
@@ -80,34 +90,11 @@ class ScanPage extends StatelessWidget {
     );
   }
 
-  MobileScanner _scanner(BuildContext context) {
-    return MobileScanner(
-      allowDuplicates: false,
-      onDetect: (code, args) async {
-        _scanProduct(context, code.rawValue);
-      },
-    );
-  }
-
-  Future _scanProduct(BuildContext context, String? productID) async {
+  Future<void> _scanProduct(BuildContext context, WidgetRef ref, String? productID) async {
     try {
-      CartProduct productToCart = CartProduct(
-        cartQuantity: 1,
-        tshirts: await TestDatabaseAPI().testAddToCart(productID!),
-      );
-
-      if (productToCart.tshirts == Tshirts.empty()) {
-        return Future.error('Product does not exist');
-      }
-
-      Navigator.push(
-        context,
-        CustomRoute(
-          builder: (context) {
-            return ProductDetailsCard(product: productToCart.tshirts);
-          },
-        ),
-      );
+      await ref.read(cartProvider.notifier).scanProduct(productID!, ref);
+      Navigator.pop(context);
+      _manualScanController.clear();
     } catch (e) {
       EasyLoading.showError(e.toString());
     }

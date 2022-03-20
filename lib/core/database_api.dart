@@ -1,64 +1,74 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:git_tees_shop/data_classes/cart_product.dart';
+import 'package:git_tees_shop/data_classes/tshirt.dart';
 import 'package:mysql1/mysql1.dart';
 
 class DatabaseAPI {
   DatabaseAPI({
-    required this.localIP,
-    required this.port,
-    required this.user,
-    required this.password,
-    required this.dbName,
+    required this.settings,
   });
 
-  String localIP;
-  String port;
-  String user;
-  String password;
-  String dbName;
+  String tableName = 'tshirt_inventory';
 
-  //String tableName = 'tshirt_inventory';
-  //String dbName = 'cpe_211';
+  final ConnectionSettings settings;
 
-  late final ConnectionSettings settings = ConnectionSettings(
-    host: localIP,
-    port: int.parse(port),
-    user: user,
-    password: password,
-    db: dbName,
-  );
-
-  Future<bool> checkForDatabaseConnection() async {
-    EasyLoading.show();
+  Future<Tshirts> addToCart(String productID) async {
+    EasyLoading.show(status: 'Loading');
 
     try {
       MySqlConnection conn = await MySqlConnection.connect(settings);
 
-      EasyLoading.dismiss();
+      //await Future.delayed(const Duration(seconds: 1));
+
+      Iterable results = await conn.query('SELECT * FROM `$tableName` WHERE `product_id`=?', [productID]);
+
+      await EasyLoading.dismiss();
+      return Tshirts(
+        color: results.first[0],
+        size: results.first[1],
+        price: results.first[2],
+        lastDateReleased: results.first[3],
+        lastDateReceived: results.first[4],
+        productID: results.first[5],
+        quantity: results.first[6],
+        productName: results.first[7],
+      );
+    } catch (e) {
+      return Future.error(e);
+
+    }
+  }
+
+  Future<bool> checkForDatabaseConnection() async {
+    EasyLoading.show(status: 'Loading');
+
+    try {
+      MySqlConnection conn = await MySqlConnection.connect(settings);
+    //  await Future.delayed(const Duration(seconds: 1));
 
       await conn.close();
+      EasyLoading.dismiss();
       return true;
     } catch (e) {
-      debugPrint(e.toString());
-      EasyLoading.showError(e.toString(), duration: const Duration(seconds: 10));
       return false;
     }
   }
 
-  Future test() async {
+  Future orderProducts(List<CartProduct> _orders) async {
+    EasyLoading.show(status: 'Loading');
+
     try {
       MySqlConnection conn = await MySqlConnection.connect(settings);
+    //  await Future.delayed(const Duration(seconds: 1));
+      for (var element in _orders) {
+        int _newQuantity = element.tshirts.quantity - element.cartQuantity;
 
-      Iterable results = await conn.query('SELECT * FROM `employee` WHERE 1', []);
-
-      debugPrint(results.toString());
-
-      EasyLoading.dismiss();
-
+        await conn.query('UPDATE `$tableName` SET `quantity`=? WHERE `product_id`=?', [_newQuantity, element.tshirts.productID]);
+      }
       await conn.close();
+      EasyLoading.dismiss();
     } catch (e) {
-      debugPrint(e.toString());
-      EasyLoading.showError('Failed to connect to database');
+      EasyLoading.showError(e.toString());
     }
   }
 }
