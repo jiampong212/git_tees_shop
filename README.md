@@ -1,6 +1,6 @@
 # Git`Tees Shop Repository
 
-## Mobile shop for Git`Tees
+### Mobile shop for Git`Tees
 
 Assignment for Cpe221 class of Engr. Mark Glen Guides
 
