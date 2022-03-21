@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:git_tees_shop/core/providers_definition.dart';
+import 'package:git_tees_shop/core/utilites.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/widgets/quantity_toggle.dart';
 
@@ -37,9 +38,9 @@ class CartListTile extends ConsumerWidget {
           flex: 3,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: Image.asset(
+            child: productNames.contains(product.tshirts.productName) ? Image.asset(
               'assets/${product.tshirts.productName}.jpeg',
-            ),
+            ) : Image.asset('1.jpg'),
           ),
         ),
         Expanded(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:git_tees_shop/core/utilites.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 
 class CheckoutListTile extends StatelessWidget {
@@ -16,9 +17,9 @@ class CheckoutListTile extends StatelessWidget {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width * 2 / 15,
-            child: Image.asset(
+            child: productNames.contains(product.tshirts.productName) ? Image.asset(
               'assets/${product.tshirts.productName}.jpeg',
-            ),
+            ) : Image.asset('1.jpg'),
           ),
           const SizedBox(
             width: 30,

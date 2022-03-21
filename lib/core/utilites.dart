@@ -27,6 +27,14 @@ enum TshirtColorsEnum {
   Pink,
 }
 
+List<String> productNames = [
+  'Coder Life Shirt',
+  'Git`Tees',
+  'GitHub Programmer',
+  'Programmer Jokes Shirt',
+  'Programming Memes Shirt',
+];
+
 class Utils {
   static String formatToPHPString(double price) {
     NumberFormat _toPHPString = NumberFormat("##0.00", "en_US");
