@@ -35,7 +35,6 @@ class DatabaseAPI {
       );
     } catch (e) {
       return Future.error(e);
-
     }
   }
 
@@ -44,7 +43,7 @@ class DatabaseAPI {
 
     try {
       MySqlConnection conn = await MySqlConnection.connect(settings);
-    //  await Future.delayed(const Duration(seconds: 1));
+      //  await Future.delayed(const Duration(seconds: 1));
 
       await conn.close();
       EasyLoading.dismiss();
@@ -59,11 +58,15 @@ class DatabaseAPI {
 
     try {
       MySqlConnection conn = await MySqlConnection.connect(settings);
-    //  await Future.delayed(const Duration(seconds: 1));
+      //  await Future.delayed(const Duration(seconds: 1));
       for (var element in _orders) {
         int _newQuantity = element.tshirts.quantity - element.cartQuantity;
 
-        await conn.query('UPDATE `$tableName` SET `quantity`=? WHERE `product_id`=?', [_newQuantity, element.tshirts.productID]);
+        await conn.query('UPDATE `$tableName` SET `quantity`=?, `last_release_date`=? WHERE `product_id`=?', [
+          _newQuantity,
+          DateTime.now().toUtc(),
+          element.tshirts.productID,
+        ]);
       }
       await conn.close();
       EasyLoading.dismiss();
