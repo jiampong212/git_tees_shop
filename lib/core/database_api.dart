@@ -69,7 +69,7 @@ class DatabaseAPI {
         ]);
       }
       await conn.close();
-      EasyLoading.dismiss();
+    //  EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.showError(e.toString());
     }

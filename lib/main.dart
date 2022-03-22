@@ -16,6 +16,7 @@ class GitTeesOnlineShop extends StatelessWidget {
       ..maskType = EasyLoadingMaskType.black
       ..indicatorType = EasyLoadingIndicatorType.cubeGrid
       ..loadingStyle = EasyLoadingStyle.custom
+      ..progressColor = Colors.blue
       ..indicatorColor = Colors.blue
       ..textColor = Colors.black
       ..backgroundColor = Colors.white
@@ -36,3 +37,4 @@ class GitTeesOnlineShop extends StatelessWidget {
     );
   }
 }
+

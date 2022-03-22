@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:git_tees_shop/core/database_api.dart';
+import 'package:git_tees_shop/core/pdf_utils.dart';
 import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/core/utilites.dart';
+import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:mysql1/mysql1.dart';
 
 class CheckoutBottomBar extends ConsumerWidget {
@@ -36,10 +41,43 @@ class CheckoutBottomBar extends ConsumerWidget {
         ConnectionSettings _settings = ref.read(databaseSettingsProvider);
         await DatabaseAPI(settings: _settings).orderProducts(ref.read(checkoutProvider));
 
-        ref.read(selectedProvider.notifier).clearSelected();
-        ref.read(cartProvider.notifier).clearCart();
+        double _progress = 0;
+        Timer? _timer;
 
-        Navigator.pop(context);
+        _timer?.cancel();
+        _timer = Timer.periodic(
+          const Duration(milliseconds: 100),
+          (Timer timer) async {
+            EasyLoading.showProgress(_progress, status: '${(_progress * 100).toStringAsFixed(0)}%\nPurchase successful\nGenerating receipt...');
+            _progress += 0.03;
+
+            if (_progress >= 1) {
+              List<CartProduct> _productList = await ref.read(checkoutProvider);
+              double _total = await ref.read(totalPriceProvider);
+              double _discount = Utils.calculateDiscount(
+                selectedVoucher: ref.watch(selectedVoucherProvider),
+                totalPrice: _total,
+              );
+
+              _timer?.cancel();
+              await PDFUtils.openReceipt(
+                await PDFUtils.generateReceipt(
+                  _productList,
+                  _total,
+                  _discount,
+                  ref.read(paymentMethodProvider),
+                ),
+              );
+
+              await EasyLoading.dismiss();
+
+              Navigator.pop(context);
+              ref.read(selectedVoucherProvider.state).state = null;
+              await ref.read(selectedProvider.notifier).clearSelected();
+              await ref.read(cartProvider.notifier).clearCart();
+            }
+          },
+        );
       },
       child: Container(
         width: MediaQuery.of(context).size.width / 4,

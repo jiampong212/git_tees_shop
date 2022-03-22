@@ -74,3 +74,7 @@ final databaseSettingsProvider = StateProvider<ConnectionSettings>((ref) {
 final selectedVoucherProvider = StateProvider<int?>((ref) {
   return null;
 });
+
+final paymentMethodProvider = StateProvider<String>((ref) {
+  return 'Cash';
+});

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:git_tees_shop/core/providers_definition.dart';
 
-class ModeOfPaymentTile extends StatelessWidget {
+class ModeOfPaymentTile extends ConsumerWidget {
   const ModeOfPaymentTile({Key? key}) : super(key: key);
 
   static const List<String> _paymentOptions = [
@@ -13,7 +15,7 @@ class ModeOfPaymentTile extends StatelessWidget {
   static String paymentMethod = _paymentOptions.first;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -46,6 +48,7 @@ class ModeOfPaymentTile extends StatelessWidget {
                   icon: const Icon(Icons.keyboard_arrow_down),
                   onChanged: (String? newValue) {
                     paymentMethod = newValue!;
+                    ref.read(paymentMethodProvider.state).state = paymentMethod;
                   },
                   items: _paymentOptions.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
