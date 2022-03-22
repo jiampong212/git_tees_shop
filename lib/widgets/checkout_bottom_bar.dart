@@ -30,8 +30,8 @@ class CheckoutBottomBar extends ConsumerWidget {
     );
   }
 
-  GestureDetector _checkoutButton(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
+  InkWell _checkoutButton(BuildContext context, WidgetRef ref) {
+    return InkWell(
       onTap: () async {
         ConnectionSettings _settings = ref.read(databaseSettingsProvider);
         await DatabaseAPI(settings: _settings).orderProducts(ref.read(checkoutProvider));
@@ -53,6 +53,13 @@ class CheckoutBottomBar extends ConsumerWidget {
   }
 
   Padding _totalDisplay(WidgetRef ref) {
+    double _total = ref.watch(totalPriceProvider);
+
+    double _discount = Utils.calculateDiscount(
+      selectedVoucher: ref.watch(selectedVoucherProvider),
+      totalPrice: _total,
+    );
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -67,7 +74,7 @@ class CheckoutBottomBar extends ConsumerWidget {
           Align(
             alignment: Alignment.bottomRight,
             child: Text(
-              Utils.formatToPHPString(ref.watch(totalPriceProvider) - ref.watch(discountProvider)),
+              Utils.formatToPHPString(_total - _discount),
               style: const TextStyle(fontSize: 20),
             ),
           ),

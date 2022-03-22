@@ -6,6 +6,7 @@ import 'package:git_tees_shop/widgets/checkout_bottom_bar.dart';
 import 'package:git_tees_shop/widgets/checkout_list_tile.dart';
 import 'package:git_tees_shop/widgets/mode_of_payment_tile.dart';
 import 'package:git_tees_shop/widgets/purchase_details.dart';
+import 'package:git_tees_shop/widgets/selected_voucher_tile.dart';
 import 'package:git_tees_shop/widgets/store_info_tile.dart';
 
 class CheckoutPage extends ConsumerWidget {
@@ -15,6 +16,13 @@ class CheckoutPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            ref.read(selectedVoucherProvider.state).state = null;
+            Navigator.pop(context);
+          },
+        ),
+        automaticallyImplyLeading: false,
         title: const Text('Checkout'),
       ),
       body: ListView(
@@ -33,6 +41,8 @@ class CheckoutPage extends ConsumerWidget {
           ),
           const Divider(),
           const ModeOfPaymentTile(),
+          const Divider(),
+          const SelectedVoucherTile(),
           const Divider(),
           const PurchaseDetails(),
         ],

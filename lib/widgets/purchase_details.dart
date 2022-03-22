@@ -11,7 +11,7 @@ class PurchaseDetails extends ConsumerWidget {
     double _total = ref.watch(totalPriceProvider);
     double _vat = _total * 0.12;
     double _subtotal = _total * 0.88;
-    double _discount = ref.watch(discountProvider);
+    double _discount = Utils.calculateDiscount(selectedVoucher: ref.watch(selectedVoucherProvider), totalPrice: _total);
 
     return Padding(
       padding: const EdgeInsets.all(16),

@@ -59,10 +59,10 @@ class HomeBottomBar extends ConsumerWidget {
     );
   }
 
-  GestureDetector _checkoutButton(BuildContext context, WidgetRef ref) {
+  InkWell _checkoutButton(BuildContext context, WidgetRef ref) {
     String _quantityString = ref.read(totalProductQuantityProvider).toString();
 
-    return GestureDetector(
+    return InkWell(
       onTap: ref.watch(selectedProvider).isEmpty
           ? null
           : () {

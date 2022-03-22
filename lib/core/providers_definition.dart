@@ -71,16 +71,6 @@ final databaseSettingsProvider = StateProvider<ConnectionSettings>((ref) {
   return ConnectionSettings();
 });
 
-final discountProvider = StateProvider<double>((ref) {
-  int _quantity = ref.watch(totalProductQuantityProvider);
-
-  if (_quantity >= 5 && _quantity <= 9) {
-    return 50;
-  } else if (_quantity >= 10 && _quantity <= 29) {
-    return 100;
-  } else if (_quantity >= 30) {
-    return 300;
-  } else {
-    return 0;
-  }
+final selectedVoucherProvider = StateProvider<int?>((ref) {
+  return null;
 });
