@@ -148,7 +148,7 @@ class Utils {
   }
 
   static String dateTimeToString(DateTime _dateTime) {
-    return '${DateFormat.EEEE().format(_dateTime)} ${DateFormat.yMMMd().format(_dateTime)} ${DateFormat.jm().format(_dateTime)}';
+    return '${DateFormat.EEEE().format(_dateTime)} ${DateFormat.yMMMMd().format(_dateTime)} ${DateFormat.jm().format(_dateTime)}';
   }
 
   static double homeScreenHeight(BuildContext context) {

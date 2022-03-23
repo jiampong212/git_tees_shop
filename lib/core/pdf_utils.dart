@@ -142,7 +142,7 @@ class PDFUtils {
                         pw.Row(
                           children: [
                             pw.Text(
-                              'Value added tax (12%):',
+                              'Value Added Tax (12%):',
                               style: pw.TextStyle(fontFallback: [fallbackFont]),
                             ),
                             pw.Spacer(),

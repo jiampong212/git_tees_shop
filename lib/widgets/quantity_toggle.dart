@@ -18,7 +18,9 @@ class QuantityToggle extends ConsumerWidget {
               ref.read(cartProvider.notifier).increaseProductQuantity(product);
             },
             child: const Text('+')),
-        Text(product.cartQuantity.toString()),
+        Text(
+          product.cartQuantity.toString(),
+        ),
         TextButton(
             onPressed: () {
               ref.read(cartProvider.notifier).decreaseProductQuantity(product, ref);

@@ -103,23 +103,26 @@ class HomeBottomBar extends ConsumerWidget {
   Padding _totalDisplay(WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          const Text(
-            'Total:',
-            style: TextStyle(fontSize: 12),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Text(
-              Utils.formatToPHPString(ref.watch(totalPriceProvider)),
-              style: const TextStyle(fontSize: 20),
+      child: Hero(
+        tag: 'total',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            const Text(
+              'Total:',
+              style: TextStyle(fontSize: 12),
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                Utils.formatToPHPString(ref.watch(totalPriceProvider)),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
