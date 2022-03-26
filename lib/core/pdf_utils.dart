@@ -13,14 +13,17 @@ import 'package:printing/printing.dart';
 class PDFUtils {
   static Future<File> generateReceipt(List<CartProduct>? _productList, double total, double discount, String paymentMethod) async {
     final pw.Document pdf = pw.Document();
-    final String month = DateFormat.M().format(DateTime.now());
-    final String d = DateFormat.d().format(DateTime.now());
-    final String y = DateFormat.y().format(DateTime.now());
-    final String h = DateFormat.H().format(DateTime.now());
-    final String m = DateFormat.m().format(DateTime.now());
-    final String s = DateFormat.s().format(DateTime.now());
 
-    final String receiptName = 'receipt-$d-$month-$y-$h-$m-$s';
+    final DateTime _currentDate = DateTime.now();
+
+    final String month = DateFormat.M().format(_currentDate);
+    final String d = DateFormat.d().format(_currentDate);
+    final String y = DateFormat.y().format(_currentDate);
+    final String h = DateFormat.H().format(_currentDate);
+    final String m = DateFormat.m().format(_currentDate);
+    final String s = DateFormat.s().format(_currentDate);
+
+    final String receiptName = 'receipt-$d-$month-$y-$h-$m-$s.pdf';
     pw.Font fallbackFont = await PdfGoogleFonts.robotoBlack();
     pw.Font mainFont = await PdfGoogleFonts.exo2Medium();
 
@@ -62,11 +65,11 @@ class PDFUtils {
                     ),
                     pw.SizedBox(height: 0.5 * PdfPageFormat.cm, width: 0),
                     pw.Text(
-                      'Receipt Number ${(DateTime.now().millisecondsSinceEpoch / 100000).truncate()}',
+                      'Receipt Number ${(_currentDate.millisecondsSinceEpoch / 100000).truncate()}',
                       style: const pw.TextStyle(fontSize: 16),
                     ),
                     pw.Text(
-                      Utils.dateTimeToString(DateTime.now()),
+                      Utils.dateTimeToString(_currentDate),
                       style: const pw.TextStyle(fontSize: 16),
                     ),
                     pw.Text(

@@ -30,7 +30,7 @@ class CartProductProvider extends StateNotifier<List<CartProduct>> {
     }
 
     if (productToCart.tshirts.quantity == 0) {
-      return Future.error('No stock left');
+      return Future.error('No stock left of\n${productToCart.tshirts.productName} - ${productToCart.tshirts.size} - ${productToCart.tshirts.color} ');
     }
 
     Iterable<CartProduct> _duplicates = _checkForDuplicates(productToCart);
