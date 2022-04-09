@@ -1,21 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:git_tees_shop/core/database_api.dart';
 import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/data_classes/tshirt.dart';
-import 'package:mysql1/mysql1.dart';
 
 class CartProductProvider extends StateNotifier<List<CartProduct>> {
   CartProductProvider() : super([]);
 
-  Future scanProduct(String productID, WidgetRef ref) async {
-    ConnectionSettings _settings = ref.read(databaseSettingsProvider);
+  Future scanProduct(String productID) async {
 
     CartProduct productToCart = CartProduct.empty();
 
     try {
-      Tshirts _tshirt = await DatabaseAPI(settings: _settings).addToCart(productID);
+      Tshirts _tshirt = await DatabaseAPI().addToCartUsingRESTApi(productID.trim());
 
       productToCart = CartProduct(
         cartQuantity: 1,
@@ -25,7 +24,8 @@ class CartProductProvider extends StateNotifier<List<CartProduct>> {
       if (e.toString() == 'Bad state: No element') {
         return Future.error('Product does not exist');
       } else {
-        return Future.error(e);
+        debugPrint(e.toString());
+        return Future.error('error here ' + e.toString());
       }
     }
 

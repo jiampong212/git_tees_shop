@@ -1,75 +1,52 @@
+import 'dart:convert';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/data_classes/tshirt.dart';
-import 'package:mysql1/mysql1.dart';
+import 'package:http/http.dart' as http;
 
 class DatabaseAPI {
-  DatabaseAPI({
-    required this.settings,
-  });
+  DatabaseAPI();
 
-  String tableName = 'tshirt_inventory';
-
-  final ConnectionSettings settings;
-
-  Future<Tshirts> addToCart(String productID) async {
+  Future<Tshirts> addToCartUsingRESTApi(String productID) async {
     EasyLoading.show(status: 'Loading');
 
+    String _embedURL = 'http://10.0.2.2:3000/$productID';
+
     try {
-      MySqlConnection conn = await MySqlConnection.connect(settings);
+      http.Response response = await http.get(Uri.parse(_embedURL));
 
-      //await Future.delayed(const Duration(seconds: 1));
-
-      Iterable results = await conn.query('SELECT * FROM `$tableName` WHERE `product_id`=?', [productID]);
-
-      await EasyLoading.dismiss();
-      return Tshirts(
-        color: results.first[0],
-        size: results.first[1],
-        price: results.first[2],
-        lastDateReleased: results.first[3],
-        lastDateReceived: results.first[4],
-        productID: results.first[5],
-        quantity: results.first[6],
-        productName: results.first[7],
-      );
+      if (response.statusCode == 200) {
+        await EasyLoading.dismiss();
+        return Tshirts.fromJson(response.body);
+      } else {
+        return Future.error('Error here');
+      }
     } catch (e) {
       return Future.error(e);
     }
   }
 
-  Future<bool> checkForDatabaseConnection() async {
+  Future orderProductsUsingRESTApi(List<CartProduct> _orders) async {
     EasyLoading.show(status: 'Loading');
 
-    try {
-      MySqlConnection conn = await MySqlConnection.connect(settings);
-      //  await Future.delayed(const Duration(seconds: 1));
-
-      await conn.close();
-      EasyLoading.dismiss();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future orderProducts(List<CartProduct> _orders) async {
-    EasyLoading.show(status: 'Loading');
+    String _embedURL = 'http://10.0.2.2:3000/order';
 
     try {
-      MySqlConnection conn = await MySqlConnection.connect(settings);
-      //  await Future.delayed(const Duration(seconds: 1));
-      for (var element in _orders) {
-        int _newQuantity = element.tshirts.quantity - element.cartQuantity;
+      http.Response response = await http.post(
+        Uri.parse(_embedURL),
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(_orders),
+      );
 
-        await conn.query('UPDATE `$tableName` SET `quantity`=?, `last_release_date`=? WHERE `product_id`=?', [
-          _newQuantity,
-          DateTime.now().toUtc(),
-          element.tshirts.productID,
-        ]);
+      if (response.statusCode == 200) {
+        await EasyLoading.dismiss();
+      } else {
+        return Future.error('Failed to order product');
       }
-      await conn.close();
-    //  EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.showError(e.toString());
     }

@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
 import 'package:git_tees_shop/data_providers/cart_product_provider.dart';
 import 'package:git_tees_shop/data_providers/checkout_provider.dart';
-import 'package:mysql1/mysql1.dart';
 
 final cartProvider = StateNotifierProvider<CartProductProvider, List<CartProduct>>(
   (ref) {
@@ -65,10 +64,6 @@ final cartAllSelectedProvider = StateProvider<bool>((ref) {
   } else {
     return false;
   }
-});
-
-final databaseSettingsProvider = StateProvider<ConnectionSettings>((ref) {
-  return ConnectionSettings();
 });
 
 final selectedVoucherProvider = StateProvider<int?>((ref) {

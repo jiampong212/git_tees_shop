@@ -92,7 +92,7 @@ class ScanPage extends ConsumerWidget {
 
   Future<void> _scanProduct(BuildContext context, WidgetRef ref, String? productID) async {
     try {
-      await ref.read(cartProvider.notifier).scanProduct(productID!, ref);
+      await ref.read(cartProvider.notifier).scanProduct(productID!);
       Navigator.pop(context);
       _manualScanController.clear();
     } catch (e) {

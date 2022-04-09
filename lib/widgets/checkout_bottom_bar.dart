@@ -8,7 +8,6 @@ import 'package:git_tees_shop/core/pdf_utils.dart';
 import 'package:git_tees_shop/core/providers_definition.dart';
 import 'package:git_tees_shop/core/utilites.dart';
 import 'package:git_tees_shop/data_classes/cart_product.dart';
-import 'package:mysql1/mysql1.dart';
 
 class CheckoutBottomBar extends ConsumerWidget {
   const CheckoutBottomBar({Key? key}) : super(key: key);
@@ -38,8 +37,7 @@ class CheckoutBottomBar extends ConsumerWidget {
   InkWell _checkoutButton(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () async {
-        ConnectionSettings _settings = ref.read(databaseSettingsProvider);
-        await DatabaseAPI(settings: _settings).orderProducts(ref.read(checkoutProvider));
+        await DatabaseAPI().orderProductsUsingRESTApi(ref.read(checkoutProvider));
 
         double _progress = 0;
         Timer? _timer;

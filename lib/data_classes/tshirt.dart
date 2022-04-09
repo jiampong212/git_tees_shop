@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:git_tees_shop/core/utilites.dart';
 
 class Tshirts {
@@ -99,4 +101,34 @@ class Tshirts {
   String toString() {
     return 'Tshirts(color: $color, size: $size, price: $price, lastDateReleased: $lastDateReleased, lastDateReceived: $lastDateReceived, productID: $productID, quantity: $quantity, productName: $productName, priceStringPHP: $priceStringPHP, lastDateReleasedString: $lastDateReleasedString, lastDateReceivedString: $lastDateReceivedString)';
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'color': color,
+      'size': size,
+      'price': price,
+      'lastDateReleased': lastDateReleased?.millisecondsSinceEpoch,
+      'lastDateReceived': lastDateReceived?.millisecondsSinceEpoch,
+      'productID': productID,
+      'quantity': quantity,
+      'productName': productName,
+    };
+  }
+
+  factory Tshirts.fromMap(Map<String, dynamic> map) {
+    return Tshirts(
+      color: map['color'] ?? '',
+      size: map['size'] ?? '',
+      price: map['price']?.toDouble() ?? 0.0,
+      lastDateReleased: map['lastDateReleased'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastDateReleased']) : null,
+      lastDateReceived: map['lastDateReceived'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastDateReceived']) : null,
+      productID: map['product_id'] ?? '',
+      quantity: map['quantity']?.toInt() ?? 0,
+      productName: map['product_name'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Tshirts.fromJson(String source) => Tshirts.fromMap(json.decode(source));
 }

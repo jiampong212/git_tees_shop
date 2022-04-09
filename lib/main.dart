@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:git_tees_shop/screens/enter_mysql_settings_page.dart';
+import 'package:git_tees_shop/screens/home_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: GitTeesOnlineShop()));
@@ -33,7 +33,7 @@ class GitTeesOnlineShop extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       builder: EasyLoading.init(),
-      home: const EnterMysqlSettingsPage(),
+      home: const HomePage(),
     );
   }
 }

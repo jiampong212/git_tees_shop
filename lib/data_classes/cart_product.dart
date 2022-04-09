@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:git_tees_shop/data_classes/tshirt.dart';
 
 class CartProduct {
@@ -34,4 +36,22 @@ class CartProduct {
       tshirts: tshirts ?? this.tshirts,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'cartQuantity': cartQuantity,
+      'tshirts': tshirts.toMap(),
+    };
+  }
+
+  factory CartProduct.fromMap(Map<String, dynamic> map) {
+    return CartProduct(
+      cartQuantity: map['cartQuantity']?.toInt() ?? 0,
+      tshirts: Tshirts.fromMap(map['tshirts']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CartProduct.fromJson(String source) => CartProduct.fromMap(json.decode(source));
 }
